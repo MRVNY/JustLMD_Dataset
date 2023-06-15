@@ -31,3 +31,8 @@ LMD_Dataset(LMD_Dict, indexing)
 ## To change the embeddings of lyrics and audio
 In `load_lyrics` and `load_audio` of `LOAD.py`, customize the tokenizer and the audio feature extractor as you want.
 The default tokenizer is bert and the default audio feature extractor is librosa.
+
+## To visualize a sequence
+```python
+dataset.visualize(sequence_name)
+```

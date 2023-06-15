@@ -3,3 +3,7 @@
 torch
 librosa
 transformers
+nosmpl
+open3d
+alfred-py
+onnxruntime

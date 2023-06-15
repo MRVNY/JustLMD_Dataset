@@ -4,6 +4,7 @@ from LMD_Dataset import LMD_Dataset
 from multiprocessing import freeze_support
 from torch.utils.data import DataLoader
 import librosa
+import random
 
 from transformers import BertTokenizer, BertModel
 
@@ -102,3 +103,6 @@ if __name__ == '__main__':
     data = next(dataiter)
     
     print(data['lyrics'].size(), data['music'].size(), data['dance'].size())
+    
+    seq = random.choice(list(dataset.indexing.values()))
+    dataset.visualize(seq)
