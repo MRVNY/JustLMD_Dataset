@@ -17,22 +17,26 @@ Execute in terminal as follows:
 ```shell
 python LOAD.py
 ```
-After the first time being executed, `JD20-22_LMD_Dict.pth` and `indenxing.json` will be generated.
+After the first time being executed, `LMD_Dict.pth` and `indenxing.json` will be generated.
 
 ## To use the dataset
-Load the .pth and .json and pass them into the `LMD_Dataset` class as follows:
+Pass the directory where `LMD_Dict.pth` and `indenxing.json` to `LMD_Dataset` when initializing the class, if the directoy doesn't exist, the class will build the dataset automatically.
 ```python
-LMD_Dict = torch.load('JD20-22_LMD_Dict.pth')
-indexing = json.load(open("indexing.json", 'r'))
-
-LMD_Dataset(LMD_Dict, indexing)
+dataset = LMD_Dataset('./')
 ```
 
 ## To change the embeddings of lyrics and audio
-In `load_lyrics` and `load_audio` of `LOAD.py`, customize the tokenizer and the audio feature extractor as you want.
+In `load_lyrics` and `load_audio` in the `LMD_Dataset` class, customize the tokenizer and the audio feature extractor as you want.
 The default tokenizer is bert and the default audio feature extractor is librosa.
 
 ## To visualize a sequence
+To quickly visualize the animations of a sequence without audio or lyrics
 ```python
 dataset.visualize(sequence_name)
+```
+
+## To export the video of a query
+To view the video of the animation with audio and lyrics
+```python
+dataset.export(sequence_name)
 ```

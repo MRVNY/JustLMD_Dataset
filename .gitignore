@@ -163,3 +163,5 @@ cython_debug/
 indexing.json
 
 *.DS_Store
+
+Previews/
