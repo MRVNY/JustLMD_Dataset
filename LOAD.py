@@ -8,14 +8,19 @@ import random
 if __name__ == '__main__':
     freeze_support()
     
-    dataset = LMD_Dataset('./')
-    dataloader = DataLoader(dataset=dataset, batch_size=4, shuffle=True, num_workers=1)
+    dataset = LMD_Dataset('./', songs_collection)
+    dataloader = DataLoader(dataset=dataset, batch_size=1, shuffle=True, num_workers=1)
 
-    dataiter = iter(dataloader)
-    data = next(dataiter)
+    # This part doesn't work on Mac
+    # dataiter = iter(dataloader)
+    # data = next(dataiter)
+    # print(data['lyrics'].size(), data['music'].size(), data['dance'].size())
     
-    print(data['lyrics'].size(), data['music'].size(), data['dance'].size())
     
     seq = random.choice(list(dataset.indexing.values()))
-    dataset.visualize(seq)
-    # dataset.export(seq)
+    # seq = 'BuildABBellaPoarchJustDance2022_22'
+    # seq = 'MONTEROCallMebyYourNamebyLilNasXJustDance2022_41'
+    # seq = 'MONTEROCallMebyYourNamebyLilNasXJustDance2022_57'
+    
+    # dataset.visualize(seq)
+    dataset.export(seq)

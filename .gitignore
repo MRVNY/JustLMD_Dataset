@@ -160,7 +160,8 @@ cython_debug/
 #.idea/
 
 *.pth
-indexing.json
+*.json
+*.pt
 
 *.DS_Store
 
