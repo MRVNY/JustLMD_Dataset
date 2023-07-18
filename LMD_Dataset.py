@@ -211,13 +211,26 @@ class LMD_Dataset(Dataset):
         if save_dir==None:
             save_dir = 'Previews/'+seq_name
             
+        [song, tag] = seq_name.split("_")
+        seq = self.LMD_Dict[seq_name]
+        
+        if inf:
+            poses = torch.load('%s/%s/%s.pt'%(self.songs_collection[0], song, seq_name))
+        
+        elif seq != None:
+            poses = seq['dance']
+        else:
+            print("Sequence does not exist")
+            return
+        
+            
         # os.system('python smpl2bvh/')
         # smpl2bvh.py --gender NEUTRAL --poses /Users/Marvin/NII_Code/Dataset/Songs_2022/BuildABBellaPoarchJustDance2022/smplfull.json --fps 30 --output /Users/Marvin/NII_Code/Dataset/Previews/BuildABBellaPoarchJustDance2022
         smpl2bvh(model_path='smpl2bvh/data/smpl/', 
                 model_type='smpl', 
                 mirror = False, 
                 gender='MALE',
-                poses=args.poses, 
+                poses=poses, 
                 num_betas=10, 
                 fps=30, 
                 output=save_dir)

@@ -1,3 +1,5 @@
+# Modified from the code of https://github.com/KosukeFukazawa/smpl2bvh 
+
 import torch
 import numpy as np
 import argparse
@@ -5,7 +7,7 @@ import pickle
 import smplx
 import json
 
-from utils import bvh, quat
+from smpl2bvh.utils import bvh, quat
 
 
 def parse_args():
@@ -34,14 +36,14 @@ def mirror_rot_trans(lrot, trans, names, parents):
     
     return quat.ik_rot(grot_mirror, parents), trans_mirror
 
-def smpl2bvh(model_path:str, poses:str, output:str, mirror:bool,
+def smpl2bvh(model_path:str, poses, output:str, mirror:bool,
              model_type="smpl", gender="MALE", 
              num_betas=10, fps=60) -> None:
     """Save bvh file created by smpl parameters.
 
     Args:
         model_path (str): Path to smpl models.
-        poses (str): Path to npz or pkl file.
+        poses (tensors): data.
         output (str): Where to save bvh.
         mirror (bool): Whether save mirror motion or not.
         model_type (str, optional): I prepared "smpl" only. Defaults to "smpl".
@@ -99,37 +101,13 @@ def smpl2bvh(model_path:str, poses:str, output:str, mirror:bool,
     
     scaling = None
     
-    # Pose setting.
-    if poses.endswith(".npz"):
-        poses = np.load(poses)
-        rots = np.squeeze(poses["poses"], axis=0) # (N, 24, 3)
-        trans = np.squeeze(poses["trans"], axis=0) # (N, 3)
+    poses = poses.reshape(180,26,3).detach().numpy().astype(np.float32)
 
-    elif poses.endswith(".pkl"):
-        with open(poses, "rb") as f:
-            poses = pickle.load(f)
-            rots = poses["smpl_poses"] # (N, 72)
-            rots = rots.reshape(rots.shape[0], -1, 3) # (N, 24, 3)
-            scaling = poses["smpl_scaling"]  # (1,)
-            trans = poses["smpl_trans"]  # (N, 3)
-            
-    elif poses.endswith(".json"):
-        with open(poses, 'rb') as f:
-            frames = json.load(f)
-            N = frames.keys().__len__()
-            rots = np.zeros((N, 24, 3))
-            trans = np.zeros((N, 3))
-            for i in range(N):
-                key = '{:06d}'.format(i)
-                trans[i] = np.array(frames[key]["annots"][0]['Th'][0])
-                grot = frames[key]["annots"][0]['Rh'][0]
-                
-                rots[i] = np.array(frames[key]["annots"][0]["poses"][0]).reshape(24, 3)
-                rots[i, 0] = np.array(grot)
-                
-    
-    else:
-        raise Exception("This file type is not supported!")
+    trans = poses[:, -2, :]
+    grot = poses[:, -1, :]
+    rots = poses[:, :-2, :]
+    rots[:, 0] = grot
+    print(trans.shape)
     
     if scaling is not None:
         trans /= scaling

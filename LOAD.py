@@ -17,8 +17,8 @@ if __name__ == '__main__':
     # print(data['lyrics'].size(), data['music'].size(), data['dance'].size())
     
     
-    # seq = random.choice(list(dataset.indexing.values()))
-    seq = 'BuildABBellaPoarchJustDance2022_22'
+    seq = random.choice(list(dataset.indexing.values()))
+    # seq = 'BuildABBellaPoarchJustDance2022_22'
     # seq = 'BuildABBellaPoarchJustDance2022_31'
     # seq = 'MONTEROCallMebyYourNamebyLilNasXJustDance2022_41'
     # seq = 'MONTEROCallMebyYourNamebyLilNasXJustDance2022_57'
@@ -26,4 +26,5 @@ if __name__ == '__main__':
     # seq = 'MrBlueSkyTheSunlightShakersJustDance2022AllPerfectsGameplay_75'
     
     # dataset.visualize(seq)
-    dataset.export(seq)
+    # dataset.export(seq)
+    dataset.toBVH(seq)
