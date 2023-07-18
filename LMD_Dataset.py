@@ -13,6 +13,8 @@ import os
 from transformers import BertTokenizer, BertModel
 import librosa
 
+from smpl2bvh.smpl2bvh import *
+
 #Lyrics_Music_Dance_Dataset
 class LMD_Dataset(Dataset): 
     def __init__ (self, data_dir, songs_collection, name='LMD'):
@@ -145,7 +147,8 @@ class LMD_Dataset(Dataset):
         poses = poses.reshape(180,26,3).detach().numpy().astype(np.float32)
         
         for pose in poses:
-            trans = (-pose[-2, :]).tolist()
+            trans = (pose[-2, :]).tolist()
+            # trans = [0,0,0]
             rot = pose[-1, :]
             body = pose[:-3, :]
             body[0] = rot
@@ -157,12 +160,15 @@ class LMD_Dataset(Dataset):
             vertices = vertices[0].squeeze()
             joints = joints[0].squeeze()
             faces = faces.astype(np.int32)
+            
+            vertices += trans
+            # trans = [trans[1], trans[0], trans[2]]
+            trans = [trans[0], trans[1], 0]
 
             o3d_vis.update(vertices, faces, trans,  R_along_axis=(-np.pi, 0, 0), waitKey=1)
             # o3d_vis.update(vertices, faces, [0,0,0],  R_along_axis=(0, 0, 0), waitKey=1)
 
         o3d_vis.release()
-        
         
     def export(self, seq_name, save_dir=None, inf=False):
         if save_dir==None:
@@ -171,11 +177,13 @@ class LMD_Dataset(Dataset):
         
         # Load audio and lyrics
         lyrics = str(self.get_raw_audio_lyrics(save_dir, seq_name))
-        lyrics = lyrics.replace('\'', '')
-        lyrics = lyrics.replace('\"', '')
-        lyrics = lyrics.replace(',', '\,')
-        lyrics = lyrics.replace('.', '\.')
-        print('\n',lyrics,'\n')
+        lyrics = lyrics.replace('\'', '')\
+            .replace('\"', '')\
+                .replace(',', '\,')\
+                    .replace('.', '\.')\
+                        .replace('(', '\(')\
+                            .replace(')', '\)')
+                        
         
         # Merge Video audio and lyrics
         os.system('ffmpeg -framerate 30 -i ' + save_dir + '/temp_%04d.png -c:v libx264 -r 30 -pix_fmt yuv420p ' + save_dir + '/mesh.mp4')
@@ -187,7 +195,6 @@ class LMD_Dataset(Dataset):
         os.system('rm %s/mesh.mp4'%save_dir)
         os.system('rm %s/audio.wav'%save_dir)
         
-    
     def get_raw_audio_lyrics(self, save_dir, seq_name):
         [song, tag] = seq_name.split("_")
         for year_dir in self.songs_collection:
@@ -199,4 +206,19 @@ class LMD_Dataset(Dataset):
                         lyrics = slicecd[timestamp]
                         os.system('ffmpeg -i %s/audio.wav -ss "%s" -t 00:06 -c copy %s/audio.wav'%(song_path, timestamp, save_dir))
                         return lyrics
-                    
+        
+    def toBVH(self, seq_name, save_dir=None, inf=False):
+        if save_dir==None:
+            save_dir = 'Previews/'+seq_name
+            
+        # os.system('python smpl2bvh/')
+        # smpl2bvh.py --gender NEUTRAL --poses /Users/Marvin/NII_Code/Dataset/Songs_2022/BuildABBellaPoarchJustDance2022/smplfull.json --fps 30 --output /Users/Marvin/NII_Code/Dataset/Previews/BuildABBellaPoarchJustDance2022
+        smpl2bvh(model_path='smpl2bvh/data/smpl/', 
+                model_type='smpl', 
+                mirror = False, 
+                gender='MALE',
+                poses=args.poses, 
+                num_betas=10, 
+                fps=30, 
+                output=save_dir)
+        
