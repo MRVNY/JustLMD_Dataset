@@ -2,7 +2,7 @@
 
 ## Shape of each modality:
 ```
-Lyrics: 180 x 768
+Lyrics: 180 x 128
 Music: 180 x 128
 Dance: 180 x 72
 ```
@@ -20,9 +20,9 @@ python LOAD.py
 After the first time being executed, `LMD_Dict.pth` and `indenxing.json` will be generated.
 
 ## To use the dataset
-Pass the directory where `LMD_Dict.pth` and `indenxing.json` to `LMD_Dataset` when initializing the class, if the directoy doesn't exist, the class will build the dataset automatically.
+Pass the directory where `LMD_Dict.pth` and `indenxing.json`, was well as the list of directories of raw data to `LMD_Dataset` when initializing the class, if the directoy doesn't exist, the class will build the dataset automatically.
 ```python
-dataset = LMD_Dataset('./')
+dataset = LMD_Dataset('./', ['./Songs_2020/', './Songs_2021/', './Songs_2022/'])
 ```
 
 ## To change the embeddings of lyrics and audio
@@ -39,4 +39,11 @@ dataset.visualize(sequence_name)
 To view the video of the animation with audio and lyrics
 ```python
 dataset.export(sequence_name)
+```
+
+## To export as .bvh
+To convert the smpl animation of a sequence to .bvh and export"
+```python 
+dataset.toBvh(sequence_name)
+```
 ```
